@@ -1,6 +1,12 @@
-var http = require('http');
+const http = require('http');
 
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end('Hello World!');
-}).listen(3000);
+const server = http.createServer((req, res) => {
+  res.end('Hello From NodeJS Server!');
+});
+
+const port = 3000;
+const ip = "127.0.0.1";
+
+server.listen(port, ip, () => {
+  console.log(`Server is running at http://${ip}:${port}`);
+});
