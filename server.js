@@ -1,7 +1,37 @@
 const http = require('http');
+const fs = require("fs");
 
-const server = http.createServer((req, res) => {
-  res.end('Hello From NodeJS Server!');
+const sendResponse = (filename, statusCode, response) => {
+  fs.readFile(`./html/${filename}`, (error, data) => {
+    if (error) {
+      response.statusCode = 500;
+      response.setHeader("Content-Type", "text/plain");
+      response.end("Sorry, internal error");
+    } else {
+      response.statusCode = statusCode;
+      response.setHeader("Content-Type", "text/html");
+      response.end(data);
+    }
+  });
+};
+
+const server = http.createServer((request, response) => {
+  console.log(request.url, request.method);
+  const method = request.method;
+  const url = request.url;
+
+  if (method === "GET") {
+    if (url === "/") {
+      sendResponse("index.html", 200, response);
+    } else if (url === "/about.html") {
+      sendResponse("about.html", 200, response);
+    } else {
+      sendResponse("404.html", 404, response);
+    }
+
+  } else {
+
+  }
 });
 
 const port = 3000;
