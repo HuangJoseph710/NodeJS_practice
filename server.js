@@ -1,5 +1,7 @@
 const http = require('http');
 const fs = require("fs");
+const qs = require("querystring");
+
 const port = 3000;
 const ip = "127.0.0.1";
 
@@ -43,12 +45,44 @@ const server = http.createServer((request, response) => {
       sendResponse(`index${selector}.html`, 200, response);
     } else if (url === "/about.html") {
       sendResponse(`about${selector}.html`, 200, response);
+    } else if (url === "/login.html") {
+      sendResponse(`login${selector}.html`, 200, response);
+    } else if (url === "/login-success.html") {
+      sendResponse(`login-success${selector}.html`, 200, response);
+    } else if (url === "/login-fail.html") {
+      sendResponse(`login-fail${selector}.html`, 200, response);
     } else {
       sendResponse(`404${selector}.html`, 404, response);
     }
 
   } else {
+    if (url === "/process-login") {
+      let body = [];
+      
+      //監聽器
+      request.on("data", (chunk) => {
+        body.push(chunk);
+      });
 
+      //監聽器
+      request.on("end", () => {
+        body = Buffer.concat(body).toString();
+        body = qs.parse(body);
+        console.log(body);
+
+        //驗證密碼
+        if (body.username === "john" && body.password === "john123") {
+          response.statusCode = 301;
+          response.setHeader("Location", "/login-success.html");
+        } else {
+          response.statusCode = 301;
+          response.setHeader("Location", "/login-fail.html");
+        }
+
+        response.end();
+      });
+
+    }
   }
 });
 
